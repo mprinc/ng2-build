@@ -1,6 +1,6 @@
 {
-    "name": "ng2-app",
-    "version": "1.0.0-semantically-released",
+    "name": "ng2-build",
+    "version": "1.0.0",
     "description": "Tools for building Angular ng2(+ng1) apps",
     "main": "index.js",
     "directories": {
