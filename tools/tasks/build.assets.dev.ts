@@ -7,13 +7,17 @@ import {APP_SRC, APP_DEST, DEV_DEPENDENCIES} from '../config';
 //  because in dev they should not be combined into bundles
 export = function buildAssetsDev(gulp, plugins) {
   return function() {
+    var internalAssetTasks = copyProjectInternalAsets();
+    var externalAssetTasks = copyProjectExternalAsets();
     // https://www.npmjs.com/package/merge-stream
-    return merge(copyProjectInternalAsets(), copyProjectExternalAsets());
+    return externalAssetTasks ? merge(internalAssetTasks, externalAssetTasks)
+        : internalAssetTasks;
 
     // copies all external asset dependencies (d.asset === true)
     // to their designated destionations (d.dest)
     function copyProjectExternalAsets() {
       var externalAssetFiles = DEV_DEPENDENCIES.filter(d => d.asset);
+      console.log("externalAssetFiles: ", JSON.stringify(externalAssetFiles));
       // http://stackoverflow.com/questions/26784094/can-i-use-a-gulp-task-with-multiple-sources-and-multiple-destinations
       var tasks = externalAssetFiles.map(function(element) {
         // https://github.com/gulpjs/gulp/blob/master/docs/API.md#gulpsrcglobs-options
@@ -22,7 +26,7 @@ export = function buildAssetsDev(gulp, plugins) {
           .pipe(gulp.dest(element.dest));
       });
 
-      return merge(...tasks);
+      return (tasks.length > 0) ? merge(...tasks) : null;
     }
 
     // copies set of asset files (not *.ts and *.scss) from APP_SRC to APP_DEST
